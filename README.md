@@ -32,7 +32,7 @@ docker run --name RustDeskServer-AiO -d \
     --env 'UMASK=000' \
     --volume /path/to/rustdesk-server:/rustdesk-server \
     --restart=unless-stopped \
-    CatFoxVoyager/rustdesk-server-aio-arm64:latest
+    splendid3002/rustdesk-server-aio-arm64:latest
 ```
 
 ## ARM64/Raspberry Pi Compatibility
