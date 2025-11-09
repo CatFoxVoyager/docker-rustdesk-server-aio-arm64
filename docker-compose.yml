@@ -12,19 +12,15 @@ services:
       - "21118:21118"
       - "21119:21119"
     environment:
-      # Enable/disable services
-      - HBBS_ENABLED=true
-      - HBBR_ENABLED=true
-
-      # Simple configuration - just set these!
+      # RustDesk configuration
       - RELAY_SERVER=192.168.1.100  # Change to your server's IP or hostname
       - KEY=_                        # Use _ to auto-generate, or set your own key
 
-      # Optional: Additional manual parameters
-      - HBBS_PARAMS=
-      - HBBR_PARAMS=
+      # Service control (default: both enabled)
+      - HBBS_ENABLED=true
+      - HBBR_ENABLED=true
 
-      # User permissions
+      # User and file permissions
       - UID=99
       - GID=100
       - DATA_PERM=770

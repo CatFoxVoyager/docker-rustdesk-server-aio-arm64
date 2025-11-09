@@ -5,34 +5,33 @@ if [ "${HBBS_ENABLED}" != "true" ] && [ "${HBBR_ENABLED}" != "true" ]; then
   sleep infinity
 fi
 
-# Build hbbs parameters automatically
-HBBS_AUTO_PARAMS=""
+# Build parameters automatically
+HBBS_PARAMS=""
+HBBR_PARAMS=""
+
 if [ -n "${RELAY_SERVER}" ]; then
-  HBBS_AUTO_PARAMS="${HBBS_AUTO_PARAMS} -r ${RELAY_SERVER}"
+  HBBS_PARAMS="${HBBS_PARAMS} -r ${RELAY_SERVER}"
   echo "---Relay server configured: ${RELAY_SERVER}---"
 fi
+
 if [ -n "${KEY}" ]; then
-  HBBS_AUTO_PARAMS="${HBBS_AUTO_PARAMS} -k ${KEY}"
-  HBBR_AUTO_PARAMS="${HBBR_AUTO_PARAMS} -k ${KEY}"
+  HBBS_PARAMS="${HBBS_PARAMS} -k ${KEY}"
+  HBBR_PARAMS="${HBBR_PARAMS} -k ${KEY}"
   echo "---Key configured---"
 fi
-
-# Combine auto params with manual params
-HBBS_FINAL_PARAMS="${HBBS_AUTO_PARAMS} ${HBBS_PARAMS}"
-HBBR_FINAL_PARAMS="${HBBR_AUTO_PARAMS} ${HBBR_PARAMS}"
 
 cd ${DATA_DIR}
 echo "---Starting RustDesk-Server-AiO---"
 if [ "${HBBS_ENABLED}" == "true" ]; then
-  echo "---Starting hbbs with params: ${HBBS_FINAL_PARAMS}---"
-  /usr/bin/hbbs ${HBBS_FINAL_PARAMS} & > ${DATA_DIR}/hbb.log
+  echo "---Starting hbbs with params:${HBBS_PARAMS}---"
+  /usr/bin/hbbs ${HBBS_PARAMS} & > ${DATA_DIR}/hbb.log
 else
   echo "---hbbs disabled!---"
 fi
 
 if [ "${HBBR_ENABLED}" == "true" ]; then
-  echo "---Starting hbbr with params: ${HBBR_FINAL_PARAMS}---"
-  /usr/bin/hbbr ${HBBR_FINAL_PARAMS} & > ${DATA_DIR}/hbb.log
+  echo "---Starting hbbr with params:${HBBR_PARAMS}---"
+  /usr/bin/hbbr ${HBBR_PARAMS} & > ${DATA_DIR}/hbb.log
 else
   echo "---hbbr disabled!---"
 fi
