@@ -10,22 +10,71 @@ This container includes both the RustDesk Server and the RustDesk Relay in one a
 | Name | Value | Example |
 | --- | --- | --- |
 | HBBS_ENABLED | The server needs by default the following ports to work properly: TCP: 21115, 21116, 21118 UDP: 21116 | true |
-| HBBS_PARAMS | Enter your extra start up parameters for the server here if necessary. | --key _ |
 | HBBR_ENABLED | The relay needs by default the following ports to work properly: TCP: 21117, 21119 | true |
-| HBBR_PARAMS | Enter your extra start up parameters for the relay here if necessary. | --key _ |
+| RELAY_SERVER | IP address or hostname of the relay server (automatically configures hbbs with -r parameter) | 192.168.1.100 or relay.example.com |
+| KEY | Shared key for encryption (automatically configures both hbbs and hbbr with -k parameter). Use "_" to generate a random key. | _ |
+| HBBS_PARAMS | Additional manual start up parameters for the server if necessary (combined with auto-generated params) | --port 21116 |
+| HBBR_PARAMS | Additional manual start up parameters for the relay if necessary (combined with auto-generated params) | --port 21117 |
 | UID | User Identifier | 99 |
 | GID | Group Identifier | 100 |
 | DATA_PERM | Data permissions | 770 |
 | UMASK | Set permissions for newly created files | 000 |
 
 ## Run example
+
+### Using Docker Compose (recommended)
+
+1. Create a `docker-compose.yml` file (or use the provided one):
+```yaml
+version: '3.8'
+
+services:
+  rustdesk-server:
+    image: splendid3002/rustdesk-server-aio-arm64:latest
+    container_name: rustdesk-server-aio
+    ports:
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+      - "21117:21117"
+      - "21118:21118"
+      - "21119:21119"
+    environment:
+      - RELAY_SERVER=192.168.1.100  # Change to your server's IP
+      - KEY=_                        # Auto-generate key
+    volumes:
+      - ./data:/rustdesk-server
+    restart: unless-stopped
+```
+
+2. Start the container:
+```bash
+docker-compose up -d
+```
+
+### Using Docker CLI
+
+#### Basic setup (simple configuration)
+```bash
+docker run --name RustDeskServer-AiO -d \
+    -p 21115-21119:21115-21119 -p 21116:21116/udp \
+    --env 'RELAY_SERVER=192.168.1.100' \
+    --env 'KEY=_' \
+    --volume /path/to/rustdesk-server:/rustdesk-server \
+    --restart=unless-stopped \
+    splendid3002/rustdesk-server-aio-arm64:latest
+```
+
+### Advanced setup (with manual parameters)
 ```bash
 docker run --name RustDeskServer-AiO -d \
     -p 21115-21119:21115-21119 -p 21116:21116/udp \
     --env 'HBBS_ENABLED=true' \
-    --env 'HBBS_PARAMS=--key _' \
     --env 'HBBR_ENABLED=true' \
-    --env 'HBBR_PARAMS=--key _' \
+    --env 'RELAY_SERVER=relay.example.com' \
+    --env 'KEY=your-secret-key' \
+    --env 'HBBS_PARAMS=' \
+    --env 'HBBR_PARAMS=' \
     --env 'UID=99' \
     --env 'GID=100' \
     --env 'DATA_PERM=770' \
@@ -34,6 +83,22 @@ docker run --name RustDeskServer-AiO -d \
     --restart=unless-stopped \
     splendid3002/rustdesk-server-aio-arm64:latest
 ```
+
+## Configuration
+
+### Relay and Rendezvous Server
+
+This container runs both the **hbbs** (rendezvous/signal server) and **hbbr** (relay server) in a single container.
+
+- **RELAY_SERVER**: Set this to the IP or hostname where clients can reach your relay server. This is automatically passed to hbbs with the `-r` parameter.
+  - If running on the same machine: use your server's public IP or hostname
+  - Example: `RELAY_SERVER=192.168.1.100` or `RELAY_SERVER=relay.example.com`
+
+- **KEY**: Set to `_` to auto-generate a random key, or provide your own key for encryption. The key is shared between hbbs and hbbr.
+  - Auto-generate: `KEY=_`
+  - Custom key: `KEY=your-secret-key-here`
+
+The configuration is now simpler - you no longer need to manually construct the `--key _` or `-r` parameters in `HBBS_PARAMS` and `HBBR_PARAMS`. Just set the environment variables and the container will handle the rest!
 
 ## ARM64/Raspberry Pi Compatibility
 
