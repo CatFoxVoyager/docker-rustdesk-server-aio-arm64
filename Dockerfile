@@ -18,21 +18,17 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-ARG HBBS_V="1.1.14"
-ARG HBBR_V="1.1.14"
-
-# Install RustDesk packages for ARM64
+# Install RustDesk packages for ARM64 (latest version)
 RUN apt-get update && \
-    wget -O /tmp/hbbs.deb https://github.com/rustdesk/rustdesk-server/releases/download/${HBBS_V}/rustdesk-server-hbbs_${HBBS_V}_arm64.deb && \
-    wget -O /tmp/hbbr.deb https://github.com/rustdesk/rustdesk-server/releases/download/${HBBR_V}/rustdesk-server-hbbr_${HBBR_V}_arm64.deb && \
+    LATEST_VERSION=$(wget -qO- https://api.github.com/repos/rustdesk/rustdesk-server/releases/latest | grep -Po '"tag_name": "\K.*?(?=")') && \
+    wget -O /tmp/hbbs.deb https://github.com/rustdesk/rustdesk-server/releases/download/${LATEST_VERSION}/rustdesk-server-hbbs_${LATEST_VERSION}_arm64.deb && \
+    wget -O /tmp/hbbr.deb https://github.com/rustdesk/rustdesk-server/releases/download/${LATEST_VERSION}/rustdesk-server-hbbr_${LATEST_VERSION}_arm64.deb && \
     apt-get -y install /tmp/hbbs.deb /tmp/hbbr.deb && \
     rm -rf /tmp/hbbs.deb /tmp/hbbr.deb /var/lib/apt/lists/*
 
 ENV DATA_DIR="/rustdesk-server"
 ENV HBBS_ENABLED="true"
 ENV HBBR_ENABLED="true"
-ENV HBBS_PARAMS=""
-ENV HBBR_PARAMS=""
 ENV RELAY_SERVER=""
 ENV KEY=""
 ENV UMASK=000
