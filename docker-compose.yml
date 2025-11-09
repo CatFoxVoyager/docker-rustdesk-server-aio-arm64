@@ -16,15 +16,15 @@ services:
       - RELAY_SERVER=192.168.1.100  # Change to your server's IP or hostname
       - KEY=_                        # Use _ to auto-generate, or set your own key
 
-      # Optional: Enable/disable services (default: both enabled)
-      # - HBBS_ENABLED=true
-      # - HBBR_ENABLED=true
+      # Service control (default: both enabled)
+      - HBBS_ENABLED=true
+      - HBBR_ENABLED=true
 
-      # Optional: User permissions
-      # - UID=99
-      # - GID=100
-      # - DATA_PERM=770
-      # - UMASK=000
+      # User and file permissions
+      - UID=99
+      - GID=100
+      - DATA_PERM=770
+      - UMASK=000
     volumes:
       - ./data:/rustdesk-server
     restart: unless-stopped

@@ -38,8 +38,19 @@ services:
       - "21118:21118"
       - "21119:21119"
     environment:
+      # RustDesk configuration
       - RELAY_SERVER=192.168.1.100  # Change to your server's IP
       - KEY=_                        # Auto-generate key
+
+      # Service control
+      - HBBS_ENABLED=true
+      - HBBR_ENABLED=true
+
+      # User and file permissions
+      - UID=99
+      - GID=100
+      - DATA_PERM=770
+      - UMASK=000
     volumes:
       - ./data:/rustdesk-server
     restart: unless-stopped
